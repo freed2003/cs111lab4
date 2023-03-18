@@ -394,7 +394,7 @@ void write_inode_table(int fd) {
 	hello_world_sym_inode.i_links_count = 1;
 	hello_world_sym_inode.i_blocks = 0; /* These are oddly 512 blocks */
 	memcpy(&hello_world_sym_inode.i_block, "hello-world", 11);
-	write_inode(fd, HELLO_INO, &root_inode);
+	write_inode(fd, HELLO_INO, &hello_world_sym_inode);
 
 	// hello-world file
 	struct ext2_inode hello_world_inode = {0};
@@ -447,6 +447,12 @@ void write_root_dir_block(int fd) {
 	struct ext2_dir_entry hello_entry = {0};
 	dir_entry_set(hello_entry, HELLO_INO, "hello");
 	dir_entry_write(hello_entry, fd);
+
+	bytes_remaining -= hello_entry.rec_len;
+
+	struct ext2_dir_entry lost_and_found_entry = {0};
+	dir_entry_set(lost_and_found_entry , LOST_AND_FOUND_INO, "lost+found");
+	dir_entry_write(lost_and_found_entry , fd);
 
 	bytes_remaining -= hello_entry.rec_len;
 
